@@ -1,7 +1,9 @@
 <script>
-    import {Button, FormGroup, Label, Input, Alert} from 'sveltestrap';
+    import {Button, TextField, Alert, Row, Col, Icon} from 'svelte-materialify';
     import {navigate} from "svelte-routing";
     import {token} from '../../stores/token.js';
+    import {mdiAlert} from "@mdi/js";
+    import {post} from '../../util/request';
 
     let email;
     let password;
@@ -11,22 +13,11 @@
     function handleLogin(e) {
         isSubmitted = true;
         errors = [];
-
-        fetch('http://localhost:3000/users/login', {
-
-            // Adding method type
-            method: "POST",
-
-            // Adding body or contents to send
-            body: JSON.stringify({
+        post({
+            url: '/users/login', body: {
                 email: email,
                 password: password
-            }),
-
-            // Adding headers to the request
-            headers: {
-                "Content-type": "application/json; charset=UTF-8"
-            }
+            }, token: $token
         }).then(r => {
             if (r.status !== 200) {
                 errors = ["Invalid login"];
@@ -37,7 +28,7 @@
             .then(r => {
                 localStorage.setItem("token", r.token);
                 token.set(localStorage.getItem('token'));
-                navigate("home",{replace:true});
+                navigate("opportunities", {replace: true});
             })
 
             .catch(e => console.error(e));
@@ -54,27 +45,30 @@
 
 <form on:submit={handleLogin} method="POST">
     {#if hasErrors}
-        <Alert color="danger">
-            {#each errors as error}
-                <div>{error}</div>
-            {/each}
-        </Alert>
+        {#each errors as error}
+            <Alert class="error-color">
+                <div slot="icon">
+                    <Icon path={mdiAlert}/>
+                </div>
+                {error}
+            </Alert>
+        {/each}
     {/if}
-    <FormGroup>
-        <Label for="email">Email</Label>
-        <Input name="email" bind:value={email} id="email"/>
-    </FormGroup>
-    <FormGroup>
-        <Label for="pass">Password</Label>
-        <Input
-                type="password"
-                name="password"
-                id="pass"
-                bind:value={password}
-        />
-    </FormGroup>
-    <FormGroup>
-        <Button color="primary" type="submit">Login</Button>
-    </FormGroup>
+    <Row>
+        <Col>
+            <TextField bind:value={email}>Email</TextField>
+        </Col>
+    </Row>
+    <Row>
+        <Col>
+            <TextField type="password" bind:value={password}>Password</TextField>
+        </Col>
+    </Row>
+
+    <Row>
+        <Col>
+            <Button class="primary-color" type="submit">Login</Button>
+        </Col>
+    </Row>
 </form>
 

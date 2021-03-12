@@ -17,8 +17,13 @@
     "svelte": "^3.0.0"
   },
   "dependencies": {
+    "@mdi/js": "^5.9.55",
+    "node-sass": "^5.0.0",
+    "postcss": "^8.2.8",
+    "sass": "^1.32.8",
     "sirv-cli": "^1.0.0",
-    "svelte-routing": "^1.5.0",
-    "sveltestrap": "^3.13.0"
+    "svelte-materialify": "^0.3.6",
+    "svelte-preprocess": "^4.6.9",
+    "svelte-routing": "^1.5.0"
   }
 }

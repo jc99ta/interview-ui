@@ -1,6 +1,8 @@
 <script>
-    import {Row, Col, FormGroup, Label, Input, Button, Alert} from 'sveltestrap';
+    import {Row, Col, TextField, Icon,Button, Alert} from 'svelte-materialify';
     import {navigate} from 'svelte-routing';
+    import {mdiAlert} from "@mdi/js";
+    import {post} from "../../util/request";
 
     let firstName;
     let lastName;
@@ -12,23 +14,13 @@
 
     function handleSubmit(e) {
         if(errors.length < 1) {
-            fetch('http://localhost:3000/users/register', {
-
-                // Adding method type
-                method: "POST",
-
-                // Adding body or contents to send
-                body: JSON.stringify({
+            post({url:'/users/register',
+                body:{
                     email: email,
                     username:username,
                     password: password,
                     firstName:firstName,
                     lastName:lastName
-                }),
-
-                // Adding headers to the request
-                headers: {
-                    "Content-type": "application/json; charset=UTF-8"
                 }
             }).then(()=>navigate("login"))
                 .catch(e=>console.error(e));
@@ -42,35 +34,35 @@
         switch(input){
             case 'firstName':
                 if('' === val){
-                    errors.push('First Name is required');
+                    errors = [...errors, 'First Name is required'];
                 }
                 break;
 
             case 'username':
                 if('' === val){
-                    errors.push('Username is required');
+                    errors = [...errors, 'Username is required'];
                 }
                 break;
             case 'lastName':
                 if('' === val){
-                    errors.push('Last Name is required');
+                    errors = [...errors, 'Last Name is required'];
                 }
                 break;
             case 'email':
                 if('' === val){
-                    errors.push('Email is required');
+                    errors = [...errors, 'Email is required'];
                 }
                 break;
             case 'password':
                 if('' === val){
-                    errors.push('Password is required');
+                    errors = [...errors, 'Password is required'];
                 }
                 break;
             case 'passwordConfirm':
                 if('' === val){
-                    errors.push('Password Confirm is required');
+                    errors = [...errors, 'Password Confirm is required'];
                 }else if(password !== passwordConfirm){
-                    errors.push("Password and Password Confirm must match");
+                    errors = [...errors, 'Password and Password Confirm must match'];
                 }
                 break;
                 default:
@@ -88,58 +80,44 @@
       on:invalid={validate}
       method="POST">
     {#if errors.length > 0}
-        <Alert color="danger">
+
             {#each errors as error}
-                <div>{error}</div>
+                <Alert class="error-color">
+                    <div slot="icon">
+                        <Icon path={mdiAlert} />
+                    </div>
+                    {error}
+                </Alert>
             {/each}
-        </Alert>
-        <span class="text-red">Submitted: {email}</span>
+
     {/if}
     <Row>
         <Col>
-            <FormGroup>
-                <Label for="firstName">First Name</Label>
-                <Input name="firstName" required bind:value={firstName} id="firstName"/>
-            </FormGroup>
+            <TextField name="firstName" required bind:value={firstName} id="firstName">First Name</TextField>
         </Col>
         <Col>
-            <FormGroup>
-                <Label for="lastName">Last Name</Label>
-                <Input name="lastName" required bind:value={lastName} id="lastName"/>
-            </FormGroup>
+            <TextField name="lastName" required bind:value={lastName} id="lastName">Last Name</TextField>
         </Col>
     </Row>
     <Row>
         <Col>
-            <FormGroup>
-                <Label for="username">Username</Label>
-                <Input name="username" required bind:value={username} id="username"/>
-            </FormGroup>
+            <TextField name="username" required bind:value={username} id="username">Username</TextField>
         </Col>
         <Col>
-            <FormGroup>
-                <Label for="email">Email</Label>
-                <Input name="email" required bind:value={email} id="email"/>
-            </FormGroup>
+            <TextField name="email" required bind:value={email} id="email">Email</TextField>
         </Col>
     </Row>
     <Row>
         <Col>
-            <FormGroup>
-                <Label for="password">Password</Label>
-                <Input name="password" required type="password" bind:value={password} id="password"/>
-            </FormGroup>
+            <TextField name="password" required type="password" bind:value={password} id="password">Password</TextField>
         </Col>
         <Col>
-            <FormGroup>
-                <Label for="passwordConfirm">Password Confirm</Label>
-                <Input name="passwordConfirm" required type="password" bind:value={passwordConfirm} id="passwordConfirm"/>
-            </FormGroup>
+            <TextField name="passwordConfirm" required type="password" bind:value={passwordConfirm} id="passwordConfirm">Password Confirm</TextField>
         </Col>
     </Row>
     <Row>
         <Col>
-            <Button type="submit">Register</Button>
+            <Button class="color-primary" type="submit">Register</Button>
         </Col>
     </Row>
 </form>

@@ -1,22 +1,23 @@
-<svelte:head>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-</svelte:head>
 <script>
     import Login from "./pages/users/Login.svelte";
     import Register from "./pages/users/Register.svelte";
+    import OpportunityList from './pages/opportunities/OpportunityList.svelte';
+    import CreateOpportunity from './pages/opportunities/CreateOpportunity.svelte';
     import Home from "./pages/home/Home.svelte";
+    import {mdiViewDashboard, mdiMenu} from "@mdi/js";
     import {
-        Container,
+        NavigationDrawer,
+        List,
+        ListItem,
+        AppBar,
+        Overlay,
+        Button,
         Row,
         Col,
-        Nav,
-        NavLink,
-        Navbar,
-        NavItem,
-        Collapse,
-        NavbarToggler,
-        NavbarBrand
-    } from 'sveltestrap';
+        MaterialApp,
+        Icon
+
+    } from 'svelte-materialify/src';
     import {Router, Link, Route, navigate} from "svelte-routing";
     import {token} from './stores/token.js';
     import ProtectedRoute from "./components/common/auth/ProtectedRoute.svelte";
@@ -24,42 +25,71 @@
     let isOpen = false;
     let isAuthenticated = false;
 
-    function handleUpdate(e) {
-        isOpen = e.detail.isOpen;
+    function toggleMenu() {
+        isOpen = !isOpen;
     }
 
     function logout() {
         localStorage.removeItem("token");
         token.set(localStorage.getItem('token'));
+        navigate('login',{replace:true});
     }
 
-    token.subscribe((t)=>{
+    token.subscribe((t) => {
         isAuthenticated = t;
     });
+
+
 </script>
-<Container>
+<MaterialApp>
+    <AppBar>
+        <div slot="icon">
+            <Button depressed on:click={toggleMenu}>
+                <Icon path={mdiMenu} />
+            </Button>
+        </div>
+
+    </AppBar>
     <Router>
-        <Navbar color="light" light expand="md">
-            <NavbarBrand href="/">Offender</NavbarBrand>
-            <NavbarToggler on:click={() => (isOpen = !isOpen)} />
-            <Collapse {isOpen} navbar expand="md" on:update={handleUpdate}>
-            <Nav class="ml-auto" navbar>
+
+        <NavigationDrawer style="height:350px;top:65px" class="primary-color theme--dark" absolute active={isOpen}>
+            <List>
                 {#if isAuthenticated}
-                    <NavItem><NavLink><Link to="home">Home</Link></NavLink></NavItem>
-                    <NavItem><NavLink><Link on:click={logout} to="login">Logout</Link></NavLink></NavItem>
+                    <ListItem>
+                         <span slot="prepend">
+                          <Icon path={mdiViewDashboard}/>
+                        </span>
+                        <Link to="opportunities">Opportunities</Link>
+                    </ListItem>
+                    <ListItem>
+                         <span slot="append" class="pa-2">
+                             <Button block on:click={logout}>Logout</Button>
+                         </span>
+                    </ListItem>
+
                 {:else}
-                    <NavItem><NavLink><Link to="login">Login</Link></NavLink></NavItem>
-                    <NavItem><NavLink><Link to="register">Register</Link></NavLink></NavItem>
+                    <ListItem>
+                        <Link to="login">Login</Link>
+                    </ListItem>
+                    <ListItem>
+                        <Link to="register">Register</Link>
+                    </ListItem>
                 {/if}
-            </Nav>
-            </Collapse>
-        </Navbar>
-    <Row>
-        <Col>
-            <Route path="login" component={Login} />
-            <Route path="register" component={Register} />
-            <ProtectedRoute path="home" component={Home} />
-        </Col>
-    </Row>
+
+            </List>
+
+        </NavigationDrawer>
+
+        <Row>
+            <Col>
+                <Route path="login" component={Login}/>
+                <Route path="register" component={Register}/>
+                <ProtectedRoute path="home" component={Home}/>
+                <ProtectedRoute path="opportunities" component={OpportunityList}/>
+                <ProtectedRoute path="create-opportunity" component={CreateOpportunity}/>
+            </Col>
+        </Row>
     </Router>
-</Container>
+    <Overlay active={isOpen} absolute on:click={toggleMenu} index={1} />
+
+</MaterialApp>
