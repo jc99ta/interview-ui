@@ -1,8 +1,9 @@
 <script>
-    import {Row, Col, TextField, Icon,Button, Alert} from 'svelte-materialify';
+    import {Row, Col, TextField, Icon, Button, Alert} from 'svelte-materialify';
     import {navigate} from 'svelte-routing';
     import {mdiAlert} from "@mdi/js";
     import {post} from "../../util/request";
+    import Error from "../../components/form/Error.svelte";
 
     let firstName;
     let lastName;
@@ -13,60 +14,62 @@
     let errors = [];
 
     function handleSubmit(e) {
-        if(errors.length < 1) {
-            post({url:'/users/register',
-                body:{
+        if (errors.length < 1) {
+            post({
+                url: '/users/register',
+                body: {
                     email: email,
-                    username:username,
+                    username: username,
                     password: password,
-                    firstName:firstName,
-                    lastName:lastName
+                    firstName: firstName,
+                    lastName: lastName
                 }
-            }).then(()=>navigate("login"))
-                .catch(e=>console.error(e));
+            }).then(() => navigate("login"))
+                .catch(e => console.error(e));
         }
         e.preventDefault();
     }
-    function validate(e){
+
+    function validate(e) {
         errors = [];
         const val = e.target.value;
         const input = e.target.name;
-        switch(input){
+        switch (input) {
             case 'firstName':
-                if('' === val){
+                if ('' === val) {
                     errors = [...errors, 'First Name is required'];
                 }
                 break;
 
             case 'username':
-                if('' === val){
+                if ('' === val) {
                     errors = [...errors, 'Username is required'];
                 }
                 break;
             case 'lastName':
-                if('' === val){
+                if ('' === val) {
                     errors = [...errors, 'Last Name is required'];
                 }
                 break;
             case 'email':
-                if('' === val){
+                if ('' === val) {
                     errors = [...errors, 'Email is required'];
                 }
                 break;
             case 'password':
-                if('' === val){
+                if ('' === val) {
                     errors = [...errors, 'Password is required'];
                 }
                 break;
             case 'passwordConfirm':
-                if('' === val){
+                if ('' === val) {
                     errors = [...errors, 'Password Confirm is required'];
-                }else if(password !== passwordConfirm){
+                } else if (password !== passwordConfirm) {
                     errors = [...errors, 'Password and Password Confirm must match'];
                 }
                 break;
-                default:
-                    break;
+            default:
+                break;
         }
 
         return true;
@@ -79,18 +82,8 @@
       on:changed={validate}
       on:invalid={validate}
       method="POST">
-    {#if errors.length > 0}
+    <Error bind:errors={errors} />
 
-            {#each errors as error}
-                <Alert class="error-color">
-                    <div slot="icon">
-                        <Icon path={mdiAlert} />
-                    </div>
-                    {error}
-                </Alert>
-            {/each}
-
-    {/if}
     <Row>
         <Col>
             <TextField name="firstName" required bind:value={firstName} id="firstName">First Name</TextField>

@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 function get({url, token}) {
     let headers = {
         "Content-type": "application/json; charset=UTF-8"
@@ -5,7 +7,7 @@ function get({url, token}) {
     if (token) {
         headers.authorization = `Bearer ${token}`;
     }
-    return fetch(`http://localhost:3000/${url}`,
+    return fetch(`http://localhost:3000/${_.trimStart(url,'/')}`,
         {headers:headers});
 }
 
@@ -18,7 +20,7 @@ function del({url, token}) {
         headers.authorization = `Bearer ${token}`;
     }
 
-    return fetch(`http://localhost:3000/${url}`, {
+    return fetch(`http://localhost:3000/${_.trimStart(url,'/')}`, {
 
         // Adding method type
         method: "DELETE",
@@ -37,7 +39,7 @@ function post({url, body, token}) {
         headers.authorization = `Bearer ${token}`;
     }
 
-    return fetch(`http://localhost:3000/${url}`, {
+    return fetch(`http://localhost:3000/${_.trimStart(url,'/')}`, {
 
         // Adding method type
         method: "POST",

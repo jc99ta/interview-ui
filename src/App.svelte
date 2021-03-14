@@ -3,11 +3,13 @@
     import Register from "./pages/users/Register.svelte";
     import OpportunityList from './pages/opportunities/OpportunityList.svelte';
     import CreateOpportunity from './pages/opportunities/CreateOpportunity.svelte';
+    import CreateContact from './pages/contacts/CreateContact.svelte';
     import Home from "./pages/home/Home.svelte";
     import {mdiViewDashboard, mdiMenu} from "@mdi/js";
     import {
         NavigationDrawer,
         List,
+        Container,
         ListItem,
         AppBar,
         Overlay,
@@ -42,7 +44,8 @@
 
 </script>
 <MaterialApp>
-    <AppBar>
+
+    <AppBar flat="true">
         <div slot="icon">
             <Button depressed on:click={toggleMenu}>
                 <Icon path={mdiMenu} />
@@ -50,6 +53,7 @@
         </div>
 
     </AppBar>
+    <Container>
     <Router>
 
         <NavigationDrawer style="height:350px;top:65px" class="primary-color theme--dark" absolute active={isOpen}>
@@ -60,11 +64,6 @@
                           <Icon path={mdiViewDashboard}/>
                         </span>
                         <Link to="opportunities">Opportunities</Link>
-                    </ListItem>
-                    <ListItem>
-                         <span slot="append" class="pa-2">
-                             <Button block on:click={logout}>Logout</Button>
-                         </span>
                     </ListItem>
 
                 {:else}
@@ -77,7 +76,11 @@
                 {/if}
 
             </List>
-
+            {#if isAuthenticated}
+                <span class="pa-2">
+                     <Button block on:click={logout}>Logout</Button>
+                 </span>
+            {/if}
         </NavigationDrawer>
 
         <Row>
@@ -85,11 +88,13 @@
                 <Route path="login" component={Login}/>
                 <Route path="register" component={Register}/>
                 <ProtectedRoute path="home" component={Home}/>
+                <ProtectedRoute path="create-contact" component={CreateContact}/>
                 <ProtectedRoute path="opportunities" component={OpportunityList}/>
                 <ProtectedRoute path="create-opportunity" component={CreateOpportunity}/>
             </Col>
         </Row>
     </Router>
+    </Container>
     <Overlay active={isOpen} absolute on:click={toggleMenu} index={1} />
 
 </MaterialApp>

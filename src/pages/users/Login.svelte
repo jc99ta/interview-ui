@@ -4,6 +4,7 @@
     import {token} from '../../stores/token.js';
     import {mdiAlert} from "@mdi/js";
     import {post} from '../../util/request';
+    import Error from "../../components/form/Error.svelte";
 
     let email;
     let password;
@@ -37,23 +38,12 @@
         return false;
     }
 
-    $: hasErrors = errors.length > 0;
-
 
 </script>
 
 
 <form on:submit={handleLogin} method="POST">
-    {#if hasErrors}
-        {#each errors as error}
-            <Alert class="error-color">
-                <div slot="icon">
-                    <Icon path={mdiAlert}/>
-                </div>
-                {error}
-            </Alert>
-        {/each}
-    {/if}
+   <Error bind:errors={errors} />
     <Row>
         <Col>
             <TextField bind:value={email}>Email</TextField>
