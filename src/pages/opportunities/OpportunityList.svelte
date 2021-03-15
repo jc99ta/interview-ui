@@ -35,7 +35,7 @@
     }
 
     function createContact(opportunityId){
-        navigate('create-contact');
+        navigate('create-contact',{state:{opportunityId:opportunityId}});
     }
 
     function add(){
