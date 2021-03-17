@@ -21,13 +21,15 @@
 
 
     function handleSubmit(e) {
+
         if (errors.length < 1) {
             post({
                 url: 'contacts/create',
                 body: {
                     firstName: firstName,
                     lastName: lastName,
-                    nickname: nickname
+                    nickname: nickname,
+                    title:title
                 },
                 token: $token
             })
