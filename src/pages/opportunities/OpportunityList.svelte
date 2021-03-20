@@ -2,24 +2,17 @@
     import {navigate} from "svelte-routing";
     import {onMount} from 'svelte';
     import {token} from "../../stores/token";
-    import {
-        Button,
-        Card,
-        Row,
-        Col,
-        CardActions,
-        Snackbar,
-        Icon,
-        CardTitle,
-        CardText
-    } from 'svelte-materialify';
-    import {mdiCalendarPlus, mdiAccountPlus, mdiDelete} from "@mdi/js";
+    import {Button, Col, Row, Snackbar} from 'svelte-materialify';
+
     import {get, post} from '../../util/request';
     import Timeline from "../../components/timeline/Timeline.svelte";
+    import Opportunity from "./Opportunity.svelte";
 
     let opportunities = [];
     let confirm = false;
     let toDelete = -1;
+    let showInterviewModal = false;
+    let interviewOpportunityId;
 
     async function loadOpportunities() {
         const res = await get({url: `opportunities/list`, token: $token});
@@ -30,13 +23,19 @@
         await loadOpportunities();
     });
 
-    function deleteOpportunity(id) {
-        toDelete = id;
+    function createInterview(event) {
+        showInterviewModal = true;
+        interviewOpportunityId = event.detail.id;
+
+    }
+
+    function deleteOpportunity(event) {
+        toDelete = event.detail.id;
         confirm = true;
     }
 
-    function createContact(opportunityId) {
-        navigate('create-contact', {state: {opportunityId: opportunityId}});
+    function createContact(event) {
+        navigate('create-contact', {state: {opportunityId: event.detail.id}});
     }
 
     function add() {
@@ -52,47 +51,35 @@
 </script>
 <style>
     /** TODO: not showing  border **/
-    .timeline-wrap{
-        border:1px solid #ccc;
-        padding:12px;
-        margin-right:12px;
-        margin-top:12px;
-        display:inline-block;
+    .timeline-wrap {
+        border: 1px solid #ccc;
+        padding: 12px;
+        margin-right: 12px;
+        margin-top: 12px;
+        display: inline-block;
     }
 </style>
 <h2>Opportunities</h2>
 <Row>
     <Col class="timeline-wrap" cols="12" sm="2">
-        <Timeline />
+        <Timeline/>
     </Col>
     <Col cols="12" sm="10">
 
         <Row>
-            <Col class="text-right"><Button color={'primary'} on:click={add}>Add Opportunity</Button></Col>
+            <Col class="text-right">
+                <Button color={'primary'} on:click={add}>Add Opportunity</Button>
+            </Col>
         </Row>
 
 
         {#if opportunities.length > 0}
             <Row>
                 {#each opportunities as opportunity}
-                    <Col lg="3" md="4" sm="6" xs="12">
-                        <Card>
-                            <CardTitle>{opportunity.name}</CardTitle>
-                            <CardText>
-                                {opportunity.description}
-                                <Row>
-                                    <Col>
-                                        Priority:{opportunity.priority}
-                                    </Col>
-                                </Row>
-                            </CardText>
-                            <CardActions class="text-right">
-                                <Button class="red-text" text on:click={()=>deleteOpportunity(opportunity.id)}><Icon path={mdiDelete} /></Button>
-                                <Button text on:click={createContact(opportunity.id)}><Icon path={mdiAccountPlus} /></Button>
-                                <Button text><Icon path={mdiCalendarPlus} /></Button>
-                            </CardActions>
-                        </Card>
-                    </Col>
+                    <Opportunity on:createInterview={createInterview}
+                                 on:createContact={createContact}
+                                 on:deleteOpportunity={deleteOpportunity}
+                                 opportunity={opportunity}/>
                 {/each}
             </Row>
 
@@ -106,7 +93,8 @@
                         remove(toDelete);
                           toDelete = -1;
 
-                      }}>Confirm</Button>
+                      }}>Confirm
+                    </Button>
                     <Button
                             class="red-text"
                             text
